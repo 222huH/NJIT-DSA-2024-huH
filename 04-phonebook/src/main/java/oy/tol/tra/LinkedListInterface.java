@@ -68,10 +68,6 @@ public interface LinkedListInterface<E> {
     */
    public void clear();
 
-   // TODO: implement this in the 2nd task of the exercise.
-   /**
-    * Reverses the items in the list to opposite order.
-    * Reversal happens in place; so the old order in this list is reversed.
-    */
+  
     public void reverse();
 }

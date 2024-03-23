@@ -1,10 +1,8 @@
 
+
 package oy.tol.tra;
 
 public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictionary<K, V> {
-
-    // This is the BST implementation, KeyValueHashTable has the hash table
-    // implementation
 
     private TreeNode<K, V> root;
     private int count = 0;
@@ -23,60 +21,59 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
     /**
      * Prints out the statistics of the tree structure usage.
      * Here you should print out member variable information which tell something
-     * about
-     * your implementation.
+     * about your implementation.
      * <p>
      * For example, if you implement this using a hash table, update member
      * variables of the class
-     * (int counters) in add(K) whenever a collision happen. Then print this counter
+     * (int counters) in add(K) whenever a collision happens. Then print this counter
      * value here.
      * You will then see if you have too many collisions. It will tell you that your
      * hash function
-     * is good or bad (too much collisions against data size).
+     * is good or bad (too many collisions against data size).
      */
     @Override
     public String getStatus() {
-        String toReturn = "Tree has max depth of " + maxTreeDepth + ".\n";
+        String toReturn = "Tree has a maximum depth of " + maxTreeDepth + ".\n";
         toReturn += "Longest collision chain in a tree node is " + TreeNode.longestCollisionChain + "\n";
         TreeAnalyzerVisitor<K, V> visitor = new TreeAnalyzerVisitor<>();
         root.accept(visitor);
-        toReturn += "Min path height to bottom: " + visitor.minHeight + "\n";
-        toReturn += "Max path height to bottom: " + visitor.maxHeight + "\n";
+        toReturn += "Minimum path height to the bottom: " + visitor.minHeight + "\n";
+        toReturn += "Maximum path height to the bottom: " + visitor.maxHeight + "\n";
         toReturn += "Ideal height if balanced: " + Math.ceil(Math.log(count)) + "\n";
         return toReturn;
     }
 
     @Override
     public boolean add(K key, V value) throws IllegalArgumentException, OutOfMemoryError {
- 
-        // Remember null check.
-        if(key==null||value==null){
-            throw new IllegalArgumentException("the key and value can not be null");
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("Neither key nor value can be null.");
         }
-        int result=0;
-        // If root is null, should go there.
-        if(root==null){
-            root=new TreeNode<K,V>(key, value);
+        if (root == null) {
+            root = new TreeNode<>(key, value);
             count++;
-        }else{
-            result=root.insert(key, value, key.hashCode());
+            maxTreeDepth = 1; // Just added the root, so depth is 1
+            return true;
+        } else {
+           
+            int added = root.insert(key, value, key.hashCode());
+            int depthAfter = TreeNode.currentAddTreeDepth;
+            TreeNode.currentAddTreeDepth = 0; // Reset for the next addition
+            if (added > 0) {
+                count++; // Increase count if a new node was added
+            }
+            if (depthAfter > maxTreeDepth) {
+                maxTreeDepth = depthAfter; // Update max depth if it increased
+            }
+            return added > 0;
         }
-            // update the root node. But it may have children
-            // so do not just replace it with this new node but set
-            // the keys and values for the already existing root.
-        
-        if(result==1){
-            count++;
-        }
-        return true;
     }
 
     @Override
     public V find(K key) throws IllegalArgumentException {
-        if(key==null){
-            throw new IllegalArgumentException("the key can not be null");
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null.");
         }
-        return root.find(key, key.hashCode());
+        return (root != null) ? root.find(key, key.hashCode()) : null;
     }
 
     @Override
@@ -95,8 +92,6 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
 
     @Override
     public void compress() throws OutOfMemoryError {
-        // Nothing to do here, since BST does not use extra space like array based
-        // structures.
+        // Nothing to do here, since BST does not use extra space like array-based structures.
     }
-
 }

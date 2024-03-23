@@ -14,7 +14,7 @@ public class QueueImplementation<E> implements QueueInterface<E> {
 
     public QueueImplementation(int capacity) throws QueueAllocationException {
         if (capacity < 2) {
-            throw new QueueAllocationException("Cannot allocate room for the internal array");
+            throw new QueueAllocationException("Capacity is too small!");
         }
         this.capacity = capacity;
         itemArray = new Object[capacity];
@@ -28,30 +28,29 @@ public class QueueImplementation<E> implements QueueInterface<E> {
     @Override
     public void enqueue(E element) throws QueueAllocationException, NullPointerException {
         if (currentSize == capacity) {
-            resizeArray();
+            resizeArray(capacity * 2 + 1);
         }
-
         if (element == null) {
             throw new NullPointerException();
         }
-
         tail = (tail + 1) % capacity;
         itemArray[tail] = element;
         currentSize++;
     }
 
-    private void resizeArray() {
-        Object[] tmp = new Object[capacity * 2 + 1];
-        if (tail >= head) {
-            System.arraycopy(itemArray, head, tmp, 0, currentSize);
-        } else {
-            System.arraycopy(itemArray, head, tmp, 0, capacity - head);
-            System.arraycopy(itemArray, 0, tmp, capacity - head, tail + 1);
+    private void resizeArray(int newCapacity) {
+        Object[] tmp = new Object[newCapacity];
+        int indexOfItemArray = head;
+        int indexOfTmp = 0;
+        int loopTime = currentSize;
+        while (loopTime-- > 0) {
+            tmp[indexOfTmp++] = itemArray[indexOfItemArray];
+            indexOfItemArray = (indexOfItemArray + 1) % capacity;
         }
         head = 0;
-        tail = currentSize - 1;
+        tail = indexOfTmp - 1;
         itemArray = tmp;
-        capacity = capacity * 2 + 1;
+        capacity = newCapacity;
     }
 
     @Override
@@ -91,9 +90,12 @@ public class QueueImplementation<E> implements QueueInterface<E> {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("[");
-        for (int i = head; i != tail; i = (i + 1) % capacity) {
-            builder.append(itemArray[i]);
-            if ((i + 1) % capacity != (tail + 1) % capacity) {
+        int indexOfItemArray = head;
+        int loopTime = currentSize;
+        while (loopTime-- > 0) {
+            builder.append(itemArray[indexOfItemArray].toString());
+            indexOfItemArray = (indexOfItemArray + 1) % capacity;
+            if (loopTime != 0) {
                 builder.append(", ");
             }
         }

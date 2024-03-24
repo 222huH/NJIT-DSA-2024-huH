@@ -1,4 +1,6 @@
 package oy.tol.tra;
+
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
@@ -77,38 +79,35 @@ public class Algorithms {
         array[index1] = array[index2];
         array[index2] = tmp;
     }
-    public static <T> int partitionByRule(T[] arr, int n, Predicate<T> rule) {
-        int i = 0;
-        for (; i < n; i++) {
-            if (rule.test(arr[i])) {
-                break;
-            }
+    public static <T> int partitionByRule(T[] array, int size, Predicate<T> rule) {
+       
+        int selectedIdx = 0;
+        for (; selectedIdx < size; selectedIdx++) {
+           if (rule.test(array[selectedIdx])) {
+              break;
+           }
         }
-        if (i >= n) {
-            return n;
+        
+        if (selectedIdx >= size) {
+           return size;
         }
-        int j = i + 1;
-        while (j != n) {
-            if (!rule.test(arr[j])) {
-                swap(arr, i, j);
-                i++;
-            }
-            j++;
+        
+        int nextIdx = selectedIdx + 1;
+       
+        while (nextIdx != size) {
+           if (!rule.test(array[nextIdx])) {
+              swap(array, selectedIdx, nextIdx);
+              
+              selectedIdx++;
+           }
+           nextIdx++;
         }
-        return i;
+        return selectedIdx;
+     }
+     
+     public static <T> void sortWithComparator( T[] array, Comparator<? super T> comparator) {
+        Arrays.sort(array, comparator);
     }
-    public static <T> void sortWithComparator(T[] array, Comparator<T> comparator) {
-        boolean swapped;
-        for (int i = 0; i < array.length - 1; i++) {
-            swapped = false;
-            for (int j = 0; j < array.length - i - 1; j++) {
-                if (comparator.compare(array[j], array[j + 1]) > 0) {
-                    T temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
-                    swapped = true;
-                }
-            }
-            if (!swapped) break;
-        }
-    }}
+}
+   
+   

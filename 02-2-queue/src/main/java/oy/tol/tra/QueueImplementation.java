@@ -18,6 +18,8 @@ public class QueueImplementation<E> implements QueueInterface<E> {
         }
         this.capacity = capacity;
         itemArray = new Object[capacity];
+        head = 0;
+        tail = -1;
     }
 
     @Override
@@ -27,11 +29,11 @@ public class QueueImplementation<E> implements QueueInterface<E> {
 
     @Override
     public void enqueue(E element) throws QueueAllocationException, NullPointerException {
-        if (currentSize == capacity) {
-            resizeArray(capacity * 2 + 1);
-        }
         if (element == null) {
             throw new NullPointerException();
+        }
+        if (currentSize == capacity) {
+            resizeArray(capacity * 2 + 1);
         }
         tail = (tail + 1) % capacity;
         itemArray[tail] = element;
@@ -45,6 +47,7 @@ public class QueueImplementation<E> implements QueueInterface<E> {
         int loopTime = currentSize;
         while (loopTime-- > 0) {
             tmp[indexOfTmp++] = itemArray[indexOfItemArray];
+            itemArray[indexOfItemArray] = null; // Set the removed element to null
             indexOfItemArray = (indexOfItemArray + 1) % capacity;
         }
         head = 0;
@@ -56,6 +59,7 @@ public class QueueImplementation<E> implements QueueInterface<E> {
     @Override
     public E dequeue() throws QueueIsEmptyException {
         E returnE = element();
+        itemArray[head] = null; // Set the removed element to null
         head = (head + 1) % capacity;
         currentSize--;
         return returnE;
@@ -85,6 +89,7 @@ public class QueueImplementation<E> implements QueueInterface<E> {
         head = 0;
         tail = -1;
         currentSize = 0;
+        itemArray = new Object[capacity]; // Reset the internal storage
     }
 
     @Override

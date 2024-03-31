@@ -64,14 +64,13 @@ public class Algorithms {
                 swap(array, left, right);
             }
         }
-        array[begin] = array[left];
-        array[left] = pivot;
+        swap(array, begin, left);
         return left;
     }
-
+    
     private static <T> void swap(T[] array, int index1, int index2) {
         T tmp = array[index1];
         array[index1] = array[index2];
         array[index2] = tmp;
     }
-}
+    }

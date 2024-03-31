@@ -21,6 +21,7 @@ public class StackImplementation<E> implements StackInterface<E> {
    }
 
    @Override
+
    public int capacity() {
       return this.capacity;
    }

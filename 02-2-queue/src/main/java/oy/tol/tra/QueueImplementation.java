@@ -3,104 +3,107 @@ package oy.tol.tra;
 public class QueueImplementation<E> implements QueueInterface<E> {
     private Object[] itemArray;
     private int capacity;
-    private int currentSize = 0;
+    private int size = 0;
     private int head = 0;
-    private int tail = -1;
-    private static final int DEFAULT_STACK_SIZE = 10;
+    private int tail = 0;
+
+    private static final int DEFAULT_QUEUE_SIZE = 10;
 
     public QueueImplementation() throws QueueAllocationException {
-        this(DEFAULT_STACK_SIZE);
+        capacity = DEFAULT_QUEUE_SIZE;
+        itemArray = new Object[DEFAULT_QUEUE_SIZE];
+    }
+  
+    public QueueImplementation(int capacity) {
+        this.capacity = capacity;
+        this.itemArray = (E[]) new Object[capacity];
+        this.head = 0;
+        this.tail = 0;
+        this.size = 0;
     }
 
-    public QueueImplementation(int capacity) throws QueueAllocationException {
-        if (capacity < 2) {
-            throw new QueueAllocationException("Capacity is too small!");
-        }
-        this.capacity = capacity;
-        itemArray = new Object[capacity];
-        head = 0;
-        tail = -1;
-    }
 
     @Override
     public int capacity() {
-        return this.capacity;
+        return capacity;
     }
 
     @Override
     public void enqueue(E element) throws QueueAllocationException, NullPointerException {
         if (element == null) {
-            throw new NullPointerException();
+            throw new NullPointerException("Cannot enqueue null element.");
         }
-        if (currentSize == capacity) {
-            resizeArray(capacity * 2 + 1);
+        if (size == capacity) {
+            try {
+                int newCapacity = 2 * capacity;
+                Object[] newArray = new Object[newCapacity];
+                for (int i = 0; i < size; i++) {
+                    newArray[i] = itemArray[(head + i) % capacity];
+                }
+                itemArray = newArray;
+                head = 0;
+                tail = size;
+                capacity = newCapacity;
+            } catch (OutOfMemoryError e) {
+                throw new QueueAllocationException("Cannot allocate more room for the queue.");
+            }
         }
-        tail = (tail + 1) % capacity;
         itemArray[tail] = element;
-        currentSize++;
-    }
-
-    private void resizeArray(int newCapacity) {
-        Object[] tmp = new Object[newCapacity];
-        int indexOfItemArray = head;
-        int indexOfTmp = 0;
-        int loopTime = currentSize;
-        while (loopTime-- > 0) {
-            tmp[indexOfTmp++] = itemArray[indexOfItemArray];
-            itemArray[indexOfItemArray] = null; // Set the removed element to null
-            indexOfItemArray = (indexOfItemArray + 1) % capacity;
-        }
-        head = 0;
-        tail = indexOfTmp - 1;
-        itemArray = tmp;
-        capacity = newCapacity;
+        tail = (tail + 1) % capacity;
+        size++;
     }
 
     @Override
     public E dequeue() throws QueueIsEmptyException {
-        E returnE = element();
-        itemArray[head] = null; // Set the removed element to null
-        head = (head + 1) % capacity;
-        currentSize--;
-        return returnE;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public E element() throws QueueIsEmptyException {
         if (isEmpty()) {
             throw new QueueIsEmptyException("Queue is empty");
+        }
+     
+        E element = (E) itemArray[head];
+        itemArray[head] = null;
+        head = (head + 1) % capacity;
+        size--;
+        return element;
+    }
+
+    @Override
+    public E element() throws QueueIsEmptyException {
+        if (size == 0) {
+            throw new QueueIsEmptyException("Queue is empty.");
         }
         return (E) itemArray[head];
     }
 
     @Override
     public int size() {
-        return currentSize;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return currentSize == 0;
+        return size == 0;
     }
 
     @Override
     public void clear() {
-        head = 0;
-        tail = -1;
-        currentSize = 0;
-        itemArray = new Object[capacity]; // Reset the internal storage
+        for (int i = 0; i < capacity; i++) {
+            itemArray[i] = null;
+        }
+        this.head = 0;
+        this.tail = 0;
+        this.size = 0;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("[");
-        int indexOfItemArray = head;
-        int loopTime = currentSize;
-        while (loopTime-- > 0) {
-            builder.append(itemArray[indexOfItemArray].toString());
-            indexOfItemArray = (indexOfItemArray + 1) % capacity;
-            if (loopTime != 0) {
+        if (size == 0) {
+            return "[]";
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (int i = 0; i < size; i++) {
+            builder.append(itemArray[(head + i) % capacity].toString());
+            if (i < size - 1) {
                 builder.append(", ");
             }
         }

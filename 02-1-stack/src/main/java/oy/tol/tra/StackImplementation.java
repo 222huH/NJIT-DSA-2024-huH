@@ -53,7 +53,7 @@ public class StackImplementation<E> implements StackInterface<E> {
       E poppedElement = (E) itemArray[currentIndex];
       itemArray[currentIndex--] = null; // Remove the element from internal storage
       return poppedElement;
-   }
+   } 
 
    @SuppressWarnings("unchecked")
    @Override

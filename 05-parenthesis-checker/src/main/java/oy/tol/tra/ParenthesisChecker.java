@@ -6,7 +6,7 @@ import java.util.EmptyStackException;
  * Uses the StackInterface implementation to check that parentheses in text files
  * match. 
  * <p>
- * TODO: Students, implement the checkParentheses() method using your StackImplementation
+ 
  * to check if parentheses in the two test files match or not.
  * <p>
  * NOTE: The Person.json test file has an error, but the tests expect that. So the test will 
@@ -26,7 +26,7 @@ public class ParenthesisChecker {
    }
 
    /**
-    * TODO: Implement this function which checks if the given string has matching opening and closing
+  
     * parentheses. It should check for matching parentheses:<p>
     *  <code>Lorem ipsum ( dolor sit {  amet, [ consectetur adipiscing ] elit, sed } do eiusmod tempor ) incididunt ut...</code>,
     * <p>
@@ -50,7 +50,7 @@ public class ParenthesisChecker {
     * @throws StackAllocationException If the stack cannot be allocated or reallocated if necessary.
     */
     public static int checkParentheses(StackInterface<Character> stack, String fromString) throws ParenthesesException {
-      // TODO:
+      
       for (int i = 0; i < fromString.length(); i++) {
          char ch = fromString.charAt(i);
      

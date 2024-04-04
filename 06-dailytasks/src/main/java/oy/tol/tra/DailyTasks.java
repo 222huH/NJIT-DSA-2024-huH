@@ -1,5 +1,4 @@
 package oy.tol.tra;
-
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,25 +26,16 @@ public class DailyTasks {
 
    private void run() {
       try {
-         // 1. create a queue (to the member variable!) for daily tasks, which are strings.
          dailyTaskQueue = new QueueImplementation<String>();
-         // 2. read the tasks for today by calling readTasks() -- implementing missing parts of it!
          readTasks();
-         // 3. create Java Timer object (to member variable) to schedule your daily tasks. (Already given to you.)
          timer = new Timer();
-         // 4. schedule the timer at fixed rate with a new TimerTask,
-         //  using the delay constant values in the class member variable. (Already given to you.)
          timer.scheduleAtFixedRate(new TimerTask() {
-            // 4.1 in the timer task run:
             @Override
             public void run() {
-               // 4.1.1 check if there are tasks in the queue:
                if (!dailyTaskQueue.isEmpty()) {
-                  // 4.1.2 if yes, print the task from the queue, dequeueing it.
                   System.out.println(dailyTaskQueue.element());
                   dailyTaskQueue.dequeue();
-               }else {
-                  // 4.1.3 if not, cancel the timer.
+               } else {
                   timer.cancel();
                }
             }
@@ -60,10 +50,8 @@ public class DailyTasks {
       tasks = new String(getClass().getClassLoader().getResourceAsStream("DailyTasks.txt").readAllBytes());
       String[] allTasks = tasks.split("\\r?\\n");
       for (String task : allTasks) {
-        
          dailyTaskQueue.enqueue(task);
       }
-     
       System.out.println(dailyTaskQueue.size());
    }
 }

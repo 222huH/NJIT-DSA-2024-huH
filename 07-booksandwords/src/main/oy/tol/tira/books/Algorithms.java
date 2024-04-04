@@ -1,5 +1,4 @@
-package oy.tol.tra;
-
+package oy.tol.tira.books;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Predicate;
@@ -105,18 +104,9 @@ public class Algorithms {
         return selectedIdx;
      }
      
-     public static void sortWithComparator(Person[] array, AscendingPersonComparator ascendingPersonComparator) {  
-        Arrays.sort(array, ascendingPersonComparator);  
-    }  
-  
-    public static void sortWithComparator(Person[] array, DescendingPersonComparator descendingPersonComparator) {  
-        Arrays.sort(array, descendingPersonComparator);  
-    }  
-  
-  
-    public static <T> void sortWithComparator(T[] array, Comparator<? super T> comparator) {  
-        Arrays.sort(array, comparator);  
-    }  
+     public static <T> void sortWithComparator( T[] array, Comparator<? super T> comparator) {
+        Arrays.sort(array, comparator);
+    }
 }
    
    

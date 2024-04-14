@@ -1,12 +1,9 @@
 package oy.tol.tra;
-
-import java.util.EmptyStackException;
-
 /**
  * Uses the StackInterface implementation to check that parentheses in text files
  * match. 
  * <p>
- 
+
  * to check if parentheses in the two test files match or not.
  * <p>
  * NOTE: The Person.json test file has an error, but the tests expect that. So the test will 
@@ -26,7 +23,7 @@ public class ParenthesisChecker {
    }
 
    /**
-  
+
     * parentheses. It should check for matching parentheses:<p>
     *  <code>Lorem ipsum ( dolor sit {  amet, [ consectetur adipiscing ] elit, sed } do eiusmod tempor ) incididunt ut...</code>,
     * <p>
@@ -50,31 +47,47 @@ public class ParenthesisChecker {
     * @throws StackAllocationException If the stack cannot be allocated or reallocated if necessary.
     */
     public static int checkParentheses(StackInterface<Character> stack, String fromString) throws ParenthesesException {
-      
-      for (int i = 0; i < fromString.length(); i++) {
-         char ch = fromString.charAt(i);
-     
-         if (ch == '(' || ch == '[' || ch == '{') {
-             try {
-                 stack.push(ch);
-                 number++;
-             } catch (Exception e) {
-                 throw new ParenthesesException("Failed to push", ParenthesesException.STACK_FAILURE);
-             }
-         } else if (ch == ')' || ch == ']' || ch == '}') {
-             if (stack.isEmpty()) {
-                 throw new ParenthesesException("There are too many closing parentheses", ParenthesesException.TOO_MANY_CLOSING_PARENTHESES);
-             } else if (findMatch(stack.peek()) != ch) {
-                 throw new ParenthesesException("Wrong kind of parenthesis were in the text", ParenthesesException.PARENTHESES_IN_WRONG_ORDER);
-             } else {
-                 stack.pop();
-                 number++;
-             }
-         }
-     }
-     
-     if (!stack.isEmpty()) {
-         throw new ParenthesesException("The string has more opening than closing parentheses.", ParenthesesException.TOO_FEW_CLOSING_PARENTHESES);
-     }
-     
-     return number;}}
+    
+      // for each character in the input string
+      //   if character is an opening parenthesis -- one of "([{"
+      //      push it into the stack (check for failure and throw an exception if so)
+      //   else if character is a closing parenthesis -- one of ")]}"
+      //      pop the latest opening parenthesis from the stack
+      //      if the popped item is null
+      //         throw an exception, there are too many closing parentheses 
+      //      check the popped opening parenthesis against the closing parenthesis read from the string
+      //      if they do not match -- opening was { but closing was ], for example.
+      //         throw an exception, wrong kind of parenthesis were in the text (e.g. "asfa ( asdf } sadf")
+      // if the stack is not empty after all the characters have been handled
+      //   throw an exception since the string has more opening than closing parentheses.
+        int count = 0;
+        for (int i = 0; i < fromString.length(); i++) {
+            char ch = fromString.charAt(i);
+            if (ch == '(' || ch == '[' || ch == '{') {
+                try {
+                    stack.push(ch);
+                } catch (Exception e) {
+                    throw new ParenthesesException("Stack operation failed", ParenthesesException.STACK_FAILURE);
+                }
+                count++;
+            } else if (ch == ')' || ch == ']' || ch == '}') {
+                Character topChar;
+                try {
+                    topChar = stack.pop();
+                } catch (Exception e) {
+                    throw new ParenthesesException("Too many closing parentheses", ParenthesesException.TOO_MANY_CLOSING_PARENTHESES);
+                }
+                if ((ch == ')' && topChar != '(') || (ch == ']' && topChar != '[') || (ch == '}' && topChar != '{')) {
+                    throw new ParenthesesException("Parentheses are in the wrong order", ParenthesesException.PARENTHESES_IN_WRONG_ORDER);
+                }
+                count++;
+            }
+        }
+        if (!stack.isEmpty()) {
+            throw new ParenthesesException("Too few closing parentheses", ParenthesesException.TOO_FEW_CLOSING_PARENTHESES);
+        }
+
+        return count;
+    }
+
+}
